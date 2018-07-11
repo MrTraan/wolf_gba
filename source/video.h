@@ -32,6 +32,11 @@
 #define PAL_SIZE		0x00400
 #define PAL_BG_MEM		((u16*)MEM_PAL)
 
+#define REG_VCOUNT *(vu16*)0x04000006
+
+void
+vid_vsync();
+
 void
 setVideoMode(u32 mode);
 

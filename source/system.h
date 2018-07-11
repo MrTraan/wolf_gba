@@ -17,6 +17,7 @@
 
 #define REG_BASE	MEM_IO
 #define REG_DISPCNT			*(vu32*)(REG_BASE+0x0000)	// display control
+#define REG_KEYINPUT	*(vu16*)(REG_BASE + 0x130) // Key Input
 
 
 #define MEM_VRAM_BACK	(MEM_VRAM+ VRAM_PAGE_SIZE)
