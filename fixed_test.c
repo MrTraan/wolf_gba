@@ -16,5 +16,11 @@ int main() {
 	printf("%f\n", fixed_tof(fixed_mul(a, c)));
 	printf("%f\n", fixed_tof(c << 1));
 	printf("%d\n", c >> 8);
+
+	fixed d = fixed_froms32(4);
+	fixed e = fixed_froms32(-7);
+	printf("%f\n", fixed_tof(d + e));
+	printf("%f\n", fixed_tof(fixed_mul(d, e)));
+	printf("%f\n", fixed_tof(fixed_mul(e, e)));
 	return (0);
 }

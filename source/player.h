@@ -16,7 +16,7 @@ typedef struct {
 } Step;
 
 typedef struct {
-	float dist;
+	fixed dist;
 	u8 side;
 	int wallID;
 } DDARecord;

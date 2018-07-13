@@ -1,8 +1,6 @@
 #ifndef TYPES_H
 # define TYPES_H
 
-#include <math.h>
-
 typedef unsigned char	u8;
 typedef unsigned short	u16;
 typedef unsigned int	u32;
@@ -24,7 +22,7 @@ static inline float fixed_tof(fixed d) {
 }
 
 static inline fixed fixed_fromf(float f) {
-	return (fixed)roundf(f * (1 << FIX_SHIFT));
+	return (fixed)(f * (1 << FIX_SHIFT));
 }
 
 static inline fixed fixed_froms32(s32 d) {
@@ -32,12 +30,11 @@ static inline fixed fixed_froms32(s32 d) {
 }
 
 static inline fixed fixed_mul(fixed a, fixed b) {
-	/* return (a >> FIX_SHIFT) * (b >> FIX_SHIFT); */
-	return (a * b) / (1 << FIX_SHIFT);
+	return (a * b) >> FIX_SHIFT;
 }
 
 static inline fixed fixed_div(fixed a, fixed b) {
-	return (a * (1 << FIX_SHIFT)) / b;
+	return (a << FIX_SHIFT) / b;
 }
 
 typedef struct {
