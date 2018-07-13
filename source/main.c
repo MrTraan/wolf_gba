@@ -2,7 +2,7 @@
 #include "video.h"
 #include "player.h"
 #include <math.h>
-	u16 __key_curr=0, __key_prev=0;
+u16 __key_curr=0, __key_prev=0;
 #include "input.h"
 
 #define M4_WIDTH    240     // Width in mode 4
@@ -21,8 +21,8 @@ inline void m4_plot(int x, int y, u8 clrid)
 
 inline void m4_plot2(int x, int y, u8 clr1, u8 clr2)
 {
-	u16 *dst= &vid_page[(y*M4_WIDTH+x)/2];  // Division by 2 due to u8/u16 pointer mismatch!
-	*dst = (clr1<<8) | clr2;
+	u16 *dst= vid_page + (y*M4_WIDTH+x)/2;  // Division by 2 due to u8/u16 pointer mismatch!
+	*dst = (clr2<<8) | clr1;
 }
 
 u16* vid_flip(u16 *vid_page)
@@ -33,13 +33,31 @@ u16* vid_flip(u16 *vid_page)
 	return vid_page;
 }
 
-int world_map[6][6] = {
-	{1, 1, 1, 1, 1, 1},
-	{1, 0, 0, 0, 0, 0},
-	{1, 0, 0, 0, 0, 0},
-	{1, 0, 0, 0, 0, 0},
-	{1, 0, 0, 0, 0, 0},
-	{1, 1, 1, 1, 1, 1},
+int world_map[24][24] = {
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
+  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
 void perform_dda(V2 pos, V2_u32 map, Step step, V2 ray_dir, V2 delta_dist, DDARecord *rec)
@@ -72,7 +90,7 @@ void perform_dda(V2 pos, V2_u32 map, Step step, V2 ray_dir, V2 delta_dist, DDARe
 
 	rec->dist = perp_wall_dist;
 	rec->side = side;
-	rec->wallID = 1;
+	rec->wallID = world_map[map.x][map.y];
 }
 
 Step setup_step(Player* player, V2 ray_dir, V2_u32 map, V2 delta_dist)
@@ -140,12 +158,12 @@ void draw_map(Player *player)
 		perform_dda(player->pos, map, step1, ray_dir_1, delta_dist_1, &rec1);
 		perform_dda(player->pos, map, step2, ray_dir_2, delta_dist_2, &rec2);
 
-		u8 color1 = 2;
-		u8 color2 = 2;
+		u8 color1 = rec1.wallID + 1;
+		u8 color2 = rec2.wallID + 1;
 		if (rec1.side)
-			color1 = 3;
+			color1 += 4;
 		if (rec2.side)
-			color2 = 3;
+			color2 += 4;
 
 		s32 line_height_1 = (s32)(M4_HEIGHT / rec1.dist);
 		s32 line_height_2 = (s32)(M4_HEIGHT / rec2.dist);
@@ -172,9 +190,7 @@ void draw_map(Player *player)
 				c1 = color1;
 			if (y > draw_start_2 && y < draw_end_2)
 				c2 = color2;
-			/* m4_plot2(x, y, c1, c2); */
-			m4_plot(x, y, c1);
-			m4_plot(x + 1, y, c2);
+			m4_plot2(x, y, c1, c2);
 		}
 	}
 }
@@ -186,7 +202,13 @@ int main(void)
 	PAL_BG_MEM[0] = RGB15(31, 31, 31);
 	PAL_BG_MEM[1] = RGB15(0, 0, 0);
 	PAL_BG_MEM[2] = RGB15(0, 0, 31);
-	PAL_BG_MEM[3] = RGB15(0, 0, 20);
+	PAL_BG_MEM[3] = RGB15(0, 31, 0);
+	PAL_BG_MEM[4] = RGB15(31, 0, 0);
+	PAL_BG_MEM[5] = RGB15(0, 20, 20);
+	PAL_BG_MEM[6] = RGB15(0, 0, 20);
+	PAL_BG_MEM[7] = RGB15(0, 20, 0);
+	PAL_BG_MEM[8] = RGB15(20, 0, 0);
+	PAL_BG_MEM[9] = RGB15(0, 10, 10);
 
 	Player player = {};
 	player.pos.x = 3.0f;
@@ -197,6 +219,7 @@ int main(void)
 	player.plane.y = -0.66f;
 
 	float rotSpeed = 0.3f;
+	float move_speed = 0.3f;
 
 	while (1) {
 		vid_vsync();
@@ -222,6 +245,37 @@ int main(void)
 			player.plane.x = player.plane.x * cos(-rotSpeed) - player.plane.y * sin(-rotSpeed);
 			player.plane.y = oldPlaneX * sin(-rotSpeed) + player.plane.y * cos(-rotSpeed);
 		}
+		if (key_is_down(KEY_UP))
+		{
+			if (world_map[(s32)(player.pos.x + player.dir.x * move_speed)][(s32)(player.pos.y)] == 0)
+				player.pos.x += player.dir.x * move_speed;
+			if (world_map[(s32)(player.pos.x)][(s32)(player.pos.y + player.dir.y * move_speed)] == 0)
+				player.pos.y += player.dir.y * move_speed;
+		}
+		if (key_is_down(KEY_DOWN))
+		{
+			if (world_map[(s32)(player.pos.x - player.dir.x * move_speed)][(s32)(player.pos.y)] == 0)
+				player.pos.x -= player.dir.x * move_speed;
+			if (world_map[(s32)(player.pos.x)][(s32)(player.pos.y - player.dir.y * move_speed)] == 0)
+				player.pos.y -= player.dir.y * move_speed;
+			break;
+		}
+	}
+
+	int color = 1;
+	while (1) {
+		vid_vsync();
+		color++;
+		if (color > 9)
+			color = 1;
+		for (int x = 0; x < M4_WIDTH; x += 2)
+		{
+			for (int y = 0; y < M4_HEIGHT; y++)
+			{
+				m4_plot2(x, y, color, color);
+			}
+		}
+		
 	}
 	return (0);
 }

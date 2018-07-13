@@ -1,1 +1,46 @@
-[]
+[
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-g",
+            "-Wall",
+            "-O3",
+            "-mcpu=arm7tdmi",
+            "-mtune=arm7tdmi",
+            "-fomit-frame-pointer",
+            "-ffast-math",
+            "-mthumb",
+            "-mthumb-interwork",
+            "-I/opt/devkitpro/libgba/include",
+            "-I/home/nathan/gba/wolf_gba/build",
+            "-o",
+            "main.o",
+            "../source/main.c"
+        ],
+        "directory": "/home/nathan/gba/wolf_gba/build",
+        "file": "../source/main.c"
+    },
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-g",
+            "-Wall",
+            "-O3",
+            "-mcpu=arm7tdmi",
+            "-mtune=arm7tdmi",
+            "-fomit-frame-pointer",
+            "-ffast-math",
+            "-mthumb",
+            "-mthumb-interwork",
+            "-I/opt/devkitpro/libgba/include",
+            "-I/home/nathan/gba/wolf_gba/build",
+            "-o",
+            "video.o",
+            "../source/video.c"
+        ],
+        "directory": "/home/nathan/gba/wolf_gba/build",
+        "file": "../source/video.c"
+    }
+]
