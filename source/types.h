@@ -17,16 +17,33 @@ typedef volatile u32	vu32;
 typedef s32 fixed;
 #define FIX_SHIFT 8
 
+#define fixed_fromf(f) (fixed)((float)(f) * (1 << FIX_SHIFT))
+
+#define fixed_froms32(d) (fixed)((s32)(d) << FIX_SHIFT)
+
+static inline s32 fixed_decimal_part(fixed d) {
+	return d & ((1 << FIX_SHIFT) - 1);
+}
+
+
+static inline fixed fixed_floor(fixed d) {
+	return d & ~(1 << (FIX_SHIFT - 1));
+}
+
+static inline fixed fixed_round(fixed d) {
+	s32 decimal_part = fixed_decimal_part(d);
+	// If $FIXED_SHIFT bit is not set, floor number
+	if ((decimal_part ^ (1 << (FIX_SHIFT - 1))) == decimal_part)
+		return fixed_floor(d);
+	return fixed_floor(d) + (1 << FIX_SHIFT);
+}
+
 static inline float fixed_tof(fixed d) {
 	return (float)d / (1 << FIX_SHIFT);
 }
 
-static inline fixed fixed_fromf(float f) {
-	return (fixed)(f * (1 << FIX_SHIFT));
-}
-
-static inline fixed fixed_froms32(s32 d) {
-	return d << FIX_SHIFT;
+static inline s32 fixed_tos32(fixed d) {
+	return d >> FIX_SHIFT;
 }
 
 static inline fixed fixed_mul(fixed a, fixed b) {

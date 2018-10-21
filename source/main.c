@@ -104,15 +104,15 @@ void calc_line_height(Player* player, fixed camera, V2_u32* out_draw, u8* color)
 		.y = ABS(fixed_div(fixed_froms32(1), ray_dir.y)),
 	};
 	V2_u32 map = {
-		.x = (player->pos.x >> 8) << 8,
-		.y = (player->pos.y >> 8) << 8,
+		.x = fixed_round(player->pos.x),
+		.y = fixed_round(player->pos.y),
 	};
 	Step step = setup_step(player, ray_dir, map, delta_dist);
 
 	u8 side = 0;
 
-	u32 cursor_x = (player->pos.x >> 8);
-	u32 cursor_y = (player->pos.y >> 8);
+	u32 cursor_x = fixed_tos32(player->pos.x);
+	u32 cursor_y = fixed_tos32(player->pos.y);
 	while (1)
 	{
 		if (step.side_dist.x < step.side_dist.y)
@@ -157,7 +157,7 @@ void calc_line_height(Player* player, fixed camera, V2_u32* out_draw, u8* color)
 
 #define MIN(a, b)(a > b ? b : a)
 #define MAX(a, b)(a < b ? b : a)
-#define SCREN_FIXW (fixed_froms32(M4_WIDTH - 1))
+#define SCREEN_FIXW (fixed_froms32(M4_WIDTH))
 
 static fixed camera_angles_cache[M4_WIDTH] = {};
 
@@ -261,7 +261,7 @@ int main(void)
 	setVideoMode(DCNT_MODE4 | DCNT_BG2);
 
 	for (u32 x = 0; x < M4_WIDTH; x++)
-		camera_angles_cache[x] = fixed_div(fixed_froms32(x << 1), SCREN_FIXW) - fixed_froms32(1);
+		camera_angles_cache[x] = fixed_div(fixed_froms32(x << 1), SCREEN_FIXW) - fixed_froms32(1);
 
 	PAL_BG_MEM[0] = RGB15(31, 31, 31);
 	PAL_BG_MEM[1] = RGB15(0, 0, 0);

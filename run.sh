@@ -1,1 +1,1 @@
-mgba-qt wolf_gba.gba
+mgba-qt wolf3d.gba
