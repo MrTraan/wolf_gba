@@ -4,12 +4,16 @@
 #include <assert.h>
 
 void test_operations();
+void test_floor();
 void test_round();
 void test_conversions();
+void test_decimal_part();
 
 int main() {
 	test_conversions();
 	test_operations();
+	test_decimal_part();
+	test_floor();
 	test_round();
 	
 	return (0);
@@ -82,20 +86,58 @@ void test_conversions() {
 void test_overflow() {
 }
 
+void test_decimal_part() {
+	fixed a = fixed_fromf(7.652);
+	fixed b = fixed_fromf(193.652);
+	assert(fixed_decimal_part(a) == fixed_decimal_part(b));
+	
+	a = fixed_fromf(89.001);
+	b = fixed_fromf(-12.001);
+	assert(fixed_decimal_part(a) == fixed_decimal_part(b));
+}
+
+void test_floor() {
+	fixed base = fixed_fromf(7.5);
+	fixed expected = fixed_froms32(7);
+	assert(fixed_floor(base) == expected);
+	
+	base = fixed_fromf(7);
+	assert(fixed_floor(base) == expected);
+
+	base = fixed_fromf(7.52);
+	assert(fixed_floor(base) == expected);
+
+	base = fixed_fromf(7.48);
+	assert(fixed_floor(base) == expected);
+
+	base = fixed_fromf(7.48);
+	assert(fixed_floor(base) == expected);
+
+	base = fixed_fromf(7.001);
+	assert(fixed_floor(base) == expected);
+	
+	base = fixed_fromf(7.99);
+	assert(fixed_floor(base) == expected);
+}
+
 void test_round() {
 	fixed base = fixed_fromf(7.5);
-	fixed expected = fixed_froms32(8);
+	fixed expected = fixed_froms32(7);
 	assert(fixed_round(base) == expected);
 
 	base = fixed_fromf(7.52);
 	expected = fixed_froms32(8);
-	printf("%f\n", fixed_tof(fixed_round(base)));
-	printf("%d\n", fixed_decimal_part(base));
-	printf("%d\n", fixed_decimal_part(base) ^ (1 << (FIX_SHIFT - 1)));
-
 	assert(fixed_round(base) == expected);
 
 	base = fixed_fromf(7.48);
 	expected = fixed_froms32(7);
+	assert(fixed_round(base) == expected);
+	
+	base = fixed_fromf(112.001);
+	expected = fixed_froms32(112);
+	assert(fixed_round(base) == expected);
+	
+	base = fixed_fromf(1024);
+	expected = fixed_froms32(1024);
 	assert(fixed_round(base) == expected);
 }

@@ -20,22 +20,22 @@ typedef s32 fixed;
 #define fixed_fromf(f) (fixed)((float)(f) * (1 << FIX_SHIFT))
 
 #define fixed_froms32(d) (fixed)((s32)(d) << FIX_SHIFT)
+#define FIXED_ONE fixed_froms32(1)
 
 static inline s32 fixed_decimal_part(fixed d) {
 	return d & ((1 << FIX_SHIFT) - 1);
 }
 
-
 static inline fixed fixed_floor(fixed d) {
-	return d & ~(1 << (FIX_SHIFT - 1));
+	return (d >> FIX_SHIFT) << FIX_SHIFT;
 }
 
 static inline fixed fixed_round(fixed d) {
 	s32 decimal_part = fixed_decimal_part(d);
 	// If $FIXED_SHIFT bit is not set, floor number
-	if ((decimal_part ^ (1 << (FIX_SHIFT - 1))) == decimal_part)
-		return fixed_floor(d);
-	return fixed_floor(d) + (1 << FIX_SHIFT);
+	if (decimal_part > (1 << (FIX_SHIFT - 1)))
+		return fixed_floor(d) + fixed_froms32(1);
+	return fixed_floor(d);
 }
 
 static inline float fixed_tof(fixed d) {
